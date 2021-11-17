@@ -53,3 +53,10 @@ is responsible of building the given product.
 The GitHub action indicates the tag you want to check-out and build.
 
 After the build, the action will sign binaries, etc.
+
+This repository needs the following secrets:
+
+- `GPG_KEY_BASE64`: base64 encoded GPG key used to sign;
+
+- `PERSONAL_ACCESS_TOKEN`: GitHub personal access token
+with `repo` scope to clone private repos.
