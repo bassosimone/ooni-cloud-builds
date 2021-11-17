@@ -7,12 +7,14 @@ on:
 
 jobs:
   build_macos:
-    runs-on: macos-11
+    runs-on: macos-10.15
     strategy:
       matrix:
         goarch:
+          # arm64 not available on macos-10.15 and macos-11
+          # is still experimental and produces weird results
+          # with tar: https://github.com/bassosimone/ooni-cloud-builds/runs/4242915889?check_suite_focus=true#step:7:105
           - "amd64"
-          - "arm64"
     steps:
 
       - name: ensure we use the required version of go
