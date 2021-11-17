@@ -14,6 +14,7 @@ jobs:
           # arm64 not available on macos-10.15 and macos-11
           # is still experimental and produces weird results
           # with tar: https://github.com/bassosimone/ooni-cloud-builds/runs/4242915889?check_suite_focus=true#step:7:105
+          # while macos-10.15 works as intended.
           - "amd64"
     steps:
 
@@ -49,13 +50,6 @@ jobs:
         run: |
           cd probe-cli
           ./mk OONIPRIVATE=../probe-private GPG_USER=simone+machine@openobservatory.org ooniprobe_darwin_${{ matrix.goarch }}.tar.gz.asc
-          file ./CLI/darwin/${{ matrix.goarch }}/ooniprobe
-          shasum -a 256 ./CLI/darwin/${{ matrix.goarch }}/ooniprobe
-          cp ooniprobe_darwin_${{ matrix.goarch }}.tar.gz /tmp
-          cd /tmp
-          tar -xzf ooniprobe_darwin_${{ matrix.goarch }}.tar.gz
-          file ./ooniprobe
-          shasum -a 256 ./ooniprobe
 
       - name: show the result artifact
         run: ls ./probe-cli/ooniprobe_darwin_*
