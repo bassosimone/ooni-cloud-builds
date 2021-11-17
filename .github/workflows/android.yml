@@ -15,7 +15,7 @@ jobs:
         with:
           go-version: "1.17.3"
 
-      - name: checkout github.com/bassosimone/ooni-cloud-builds
+      - name: checkout github.com/bassosimone/cloud-builds
         uses: actions/checkout@v2
 
       - name: checkout github.com/ooni/probe-private
