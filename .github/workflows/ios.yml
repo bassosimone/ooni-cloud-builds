@@ -1,0 +1,51 @@
+# builds and publishes ios artifacts
+name: ios
+on:
+  push:
+    branches:
+      - ios-staging
+
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps:
+
+      - name: ensure we use the required version of go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "1.17.3"
+
+      - name: checkout github.com/bassosimone/cloud-builds
+        uses: actions/checkout@v2
+
+      - name: checkout github.com/ooni/probe-private
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-private
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: probe-private
+
+      - name: checkout github.com/ooni/probe-cli
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-cli
+          ref: v3.11.0-beta.1
+          path: probe-cli
+          fetch-depth: 0
+
+      - name: build oonimkall for all ios
+        run: |
+          cd probe-cli
+          ./mk OONIPRIVATE=../probe-private XCODE_VERSION=12.4 ./MOBILE/ios
+
+      - name: delete the xcframework directory
+        run: rm -rf ./probe-cli/MOBILE/ios/oonimkall.xcframework
+
+      - name: show the result artifact
+        run: ls ./probe-cli/MOBILE/ios/oonimkall.*
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: oonimkall-ios
+          path: ./probe-cli/MOBILE/ios/oonimkall.*
