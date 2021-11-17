@@ -43,7 +43,7 @@ We fork from main the following branches and we let them grow independently:
 
 - `miniooni-staging`
 
-- `ooniprobe-cli-staging`
+- `ooniprobe-cli-{linux,macos,windows-}staging`
 
 - `ooniprobe-desktop-staging`
 
