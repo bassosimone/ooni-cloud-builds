@@ -37,15 +37,15 @@ This section describes the repository's concept.
 
 We fork from main the following branches and we let them grow independently:
 
-- `staging-android`
+- `android-staging`
 
-- `staging-ios`
+- `ios-staging`
 
-- `staging-miniooni`
+- `miniooni-staging`
 
-- `staging-ooniprobe-cli`
+- `ooniprobe-cli-staging`
 
-- `staging-ooniprobe-desktop`
+- `ooniprobe-desktop-staging`
 
 Each branch contains a single GitHub action in `.github/workflows` that
 is responsible of building the given product.
