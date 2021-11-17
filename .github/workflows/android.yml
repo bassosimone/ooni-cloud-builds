@@ -1,0 +1,53 @@
+# builds and publishes android artifacts
+name: android
+on:
+  push:
+    branches:
+      - android-staging
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: ensure we use the required version of go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "1.17.3"
+
+      - name: checkout github.com/bassosimone/ooni-cloud-builds
+        uses: actions/checkout@v2
+
+      - name: checkout github.com/ooni/probe-private
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-private
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: probe-private
+
+      - name: checkout github.com/ooni/probe-cli
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-cli
+          ref: v3.11.0-beta.1
+          path: probe-cli
+          fetch-depth: 0
+
+      - name: import signing GPG key
+        run: echo $GPG_KEY_BASE64 | base64 --decode | gpg --import
+        env:
+          GPG_KEY_BASE64: ${{ secrets.GPG_KEY_BASE64 }}
+
+      - name: build oonimkall for all android
+        run: |
+          cd probe-cli
+          ./mk OONIPRIVATE=../probe-private GPG_USER=simone+machine@openobservatory.org ./MOBILE/android
+
+      - name: show the result artifact
+        run: ls ./probe-cli/MOBILE/android/bundle.jar
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: oonimkall-android
+          path: ./probe-cli/MOBILE/android/bundle.jar
