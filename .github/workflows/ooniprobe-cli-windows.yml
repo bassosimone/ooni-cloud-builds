@@ -1,0 +1,69 @@
+# builds and publishes ooniprobe
+name: ooniprobe-cli-windows
+on:
+  push:
+    branches:
+      - ooniprobe-cli-windows-staging
+
+jobs:
+  build_windows:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        goarch:
+          - "386"
+          - "amd64"
+    steps:
+
+      - name: ensure we use the required version of go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "1.17.3"
+
+      - name: update the packages index
+        run: sudo apt update
+
+      - name: upgrade packages
+        run: sudo apt dist-upgrade --yes
+
+      - name: install dependencies
+        run: sudo apt install --yes mingw-w64
+
+      - name: checkout github.com/bassosimone/cloud-builds
+        uses: actions/checkout@v2
+
+      - name: checkout github.com/ooni/probe-private
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-private
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: probe-private
+
+      - name: checkout github.com/ooni/probe-cli
+        uses: actions/checkout@v2
+        with:
+          repository: ooni/probe-cli
+          ref: v3.11.0-beta.1
+          path: probe-cli
+          fetch-depth: 0
+
+      - name: import signing GPG key
+        run: echo $GPG_KEY_BASE64 | base64 --decode | gpg --import
+        env:
+          GPG_KEY_BASE64: ${{ secrets.GPG_KEY_BASE64 }}
+
+      - name: build ooniprobe.exe for windows/${{ matrix.goarch }}
+        run: |
+          cd probe-cli
+          ./mk OONIPRIVATE=../probe-private GPG_USER=simone+machine@openobservatory.org MINGW_W64_VERSION="9.3-win32" ooniprobe_windows_${{ matrix.goarch }}.tar.gz.asc
+          ./mk OONIPRIVATE=../probe-private GPG_USER=simone+machine@openobservatory.org MINGW_W64_VERSION="9.3-win32" ooniprobe_windows_${{ matrix.goarch }}.zip.asc
+
+      - name: show the result artifact
+        run: ls ./probe-cli/ooniprobe_windows_*
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: github.ref == 'refs/heads/ooniprobe-staging'
+        with:
+          name: ooniprobe-windows
+          path: ./probe-cli/ooniprobe_windows_*
