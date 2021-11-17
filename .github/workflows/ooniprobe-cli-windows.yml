@@ -63,7 +63,6 @@ jobs:
 
       - name: upload artifacts
         uses: actions/upload-artifact@v2
-        if: github.ref == 'refs/heads/ooniprobe-staging'
         with:
           name: ooniprobe-windows
           path: ./probe-cli/ooniprobe_windows_*
