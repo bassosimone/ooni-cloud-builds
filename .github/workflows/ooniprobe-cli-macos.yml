@@ -47,6 +47,13 @@ jobs:
         run: |
           cd probe-cli
           ./mk OONIPRIVATE=../probe-private GPG_USER=simone+machine@openobservatory.org ooniprobe_darwin_${{ matrix.goarch }}.tar.gz.asc
+          file ./CLI/darwin/${{ matrix.goarch }}/ooniprobe
+          shasum -a 256 ./CLI/darwin/${{ matrix.goarch }}/ooniprobe
+          cp ooniprobe_darwin_${{ matrix.goarch }}.tar.gz /tmp
+          cd /tmp
+          tar -xzf ooniprobe_darwin_${{ matrix.goarch }}.tar.gz
+          file ./ooniprobe
+          shasum -a 256 ./ooniprobe
 
       - name: show the result artifact
         run: ls ./probe-cli/ooniprobe_darwin_*
